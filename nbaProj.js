@@ -163,9 +163,30 @@ app.get("/retreiveRoster", (req, res)=>{
 })
 
 app.post("/retreiveRoster", async (req, res)=>{
-  const email = req.body.email
-  const lineupName= req.body.lineup
-  const info = await collection.find({ email:email, lineup:lineupName})
+ 
+ try{
+  const {email,lineup}=req.body
+  const roster = await Roster.findOne({
+    email:email,
+    lineupName:lineup
+
+  })
+  if (!roster){
+  return res.render("playerResults", {
+    players:[],
+    error:"No roster found for that email and lineup name"
+
+  })
+}
+res.render("playerResults", {
+  players:roster.players
+
+})
+ } catch (err){
+  console.error(err)
+  res.status(500).send("Server error retrieving roster")
+ }
+ 
 
 
 
