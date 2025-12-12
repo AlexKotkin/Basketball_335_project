@@ -3,15 +3,38 @@
 
 <head>
 	<meta charset="utf-8" />
-	<title>Select Players</title>
+	<title>Player Roster</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 
-<body>
-    <h1>Submitted Line up</h1>
-         <%- players %>
 
-  
+<body>
+  <h1>Submitted Lineup</h1>
+
+  <table border="1">
+    <tr>
+      <th>Name</th>
+      <th>Jersey Number</th>
+    </tr>
+
+    <% players.forEach(p => { %>
+      <tr>
+        <td><%= p.name %></td>
+        <td>
+          <% if (p.status === "found") { %>
+            <% if (p.jersey !== null) { %>
+              Jersey #<%= p.jersey %>
+            <% } else { %>
+              Jersey unknown
+            <% } %>
+          <% } else { %>
+            <span style="color:red"><%= p.message %></span>
+          <% } %>
+        </td>
+      </tr>
+    <% }) %>
+  </table>
+
   <br><br>
   <a href="/">HOME</a>
 </body>
