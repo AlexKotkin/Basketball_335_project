@@ -10,15 +10,12 @@ html , body {
   min-height: 100vh;
   background-color: antiquewhite;
   font-family: var(--font-family);
-
 } 
 
-  :root{
-    
+:root{ 
     --font-family: "Roboto Slab", serif;
-  
-    
-  }
-  .playerDNE{
+}
+
+.playerDNE{
     color:red
   }
