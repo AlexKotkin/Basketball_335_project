@@ -31,6 +31,7 @@ async function connectDB() {
 
 const rosterSchema = new mongoose.Schema({
   email:{type:String,required:true},
+  lineupName:{type:Sting, required: true},
   players:[{name: String}],
     createdAt:{
       type:Date,
@@ -122,17 +123,11 @@ for (const name of names){
 
       })
     }
-
 }
-  
-
-
-  // const players= names.filter(name=> name && name.trim()!=="").map(name=>({
-  //   name: name
-  // }))
 
   const roster = new Roster({
     email:req.body.email,
+    lineupName:req.body.lineupName,
     players
 
   })
@@ -144,6 +139,19 @@ for (const name of names){
 
 
 // Show page where user builds lineup
+app.get("/retreiveRoster", (req, res)=>{
+    res.render("getRoster");
+})
+
+app.post("/retreiveRoster", async (req, res)=>{
+  const email = req.body.email
+  const lineupName= req.body.lineup
+  const info = await collection.find({ email:email, lineup:lineupName})
+
+
+
+})
+
 
 
 //Save Lineup
@@ -188,6 +196,8 @@ app.get("/apitest", async (req, res) => {
 
 
 process.stdin.setEncoding("utf8");
+
+
 
 process.stdin.on("readable", () => {
   let dataInput;
