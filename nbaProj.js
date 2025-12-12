@@ -30,32 +30,47 @@ async function connectDB() {
 
 
 const rosterSchema = new mongoose.Schema({
-  email:{type:String,required:true},
+  email:{type:String, required:true},
   lineupName:{type:Sting, required: true},
-  players:[{name: String}],
-    createdAt:{
-      type:Date,
-      default:Date.now
-    }
-
+  players: [{
+    name: String,
+    status: String,
+    jersey: Number
+  }],    
+  createdAt:{
+    type:Date,
+    default:Date.now
+  }
 })
 
 const Roster = mongoose.model("Roster", rosterSchema)
 
-function makeTable(contents){
-    let html = `<table border =1> 
-            <tr>
-            <th>Name</th>
-          
-            </tr>`;
-    contents.forEach(element => {html+=`<tr>
-                                        <td>${element.name}</td>
-                                        
-                                        </tr>`    
-    });
-    html+=`</table>`
-    return html;
-}
+// function makeTable(contents) {
+//   let html = `
+//     <table border="1">
+//       <tr>
+//         <th>Name</th>
+//         <th>Result</th>
+//       </tr>
+//   `;
+
+//   contents.forEach(p => {
+//     html += `
+//       <tr>
+//         <td>${p.name}</td>
+//         <td>
+//           ${p.status === "found"
+//             ? `Jersey #${p.jersey}`
+//             : `<span style="color:red">${p.message}</span>`
+//           }
+//         </td>
+//       </tr>
+//     `;
+//   });
+
+//   html += `</table>`;
+//   return html;
+// }
 
 
 
@@ -67,7 +82,7 @@ app.get("/playerForm", (req,res) => {
   res.render("playerForm")
 })
 
-async function getPplayerFromAPI(fullname){
+async function getPlayerFromAPI(fullname){
   const [first , last]=fullname.trim().split(" ")
 
 
@@ -111,19 +126,23 @@ app.post("/getRoster", async (req, res) => {
   const players =[]
 for (const name of names){
 
-    const apiPlayer = await getPplayerFromAPI(name)
-    if (apiPlayer){
+    const apiPlayer = await getPlayerFromAPI(name)
+    if (apiPlayer) {
       players.push({
         name: `${apiPlayer.firstname} ${apiPlayer.lastname}`,
-
-      })
-    }else{
+        status: "found",
+        jersey: apiPlayer.leagues?.standard?.jersey ?? null
+      });
+    } else {
       players.push({
-        name: name
-
-      })
+        name: name,
+        status: "not_found",
+        jersey: null,
+        message: "Player does not exist"
+      });
     }
 }
+
 
   const roster = new Roster({
     email:req.body.email,
@@ -132,9 +151,9 @@ for (const name of names){
 
   })
   await roster.save()
-  const tableHTML = makeTable(players)
+  // const tableHTML = makeTable(players)
 
-  res.render("playerResults", { players: tableHTML })
+  res.render("playerResults", { players })
 })
 
 
@@ -158,7 +177,7 @@ app.post("/retreiveRoster", async (req, res)=>{
 
 app.get("/apitest", async (req, res) => {
   const fullName = "LeBron James";
-  const [first, last] = fullname.trim().split(" ");
+  const [first, last] = fullName.trim().split(" ");
 
   const url = `https://v2.nba.api-sports.io/players?name=${last}`;
 
