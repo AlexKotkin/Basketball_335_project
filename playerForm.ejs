@@ -15,13 +15,15 @@
 <body>
   <h1>Enter 5 NBA Players</h1>
 
-  <form action="/getRoster" method="POST">
+  <form action="/getRoster" method="POST" >
     <p>Enter each player’s full name (for example: <em>Stephen Curry</em>).</p>
     <p>Player 1: <input name="p1" placeholder="e.g. Derrick White"></p>
     <p>Player 2: <input name="p2" placeholder="e.g. Jayson Tatum"></p>
     <p>Player 3: <input name="p3" placeholder="e.g. Lebron James"></p>
     <p>Player 4: <input name="p4" placeholder="e.g. Nikola Jokic"></p>
     <p>Player 5: <input name="p5" placeholder="e.g. Myles Turner"></p>
+
+    <p>Email: <input name="email" type="email" placeholder="exampleEmail@gmail.com"></p>
   
     <button type="submit">Submit Roster</button>
   </form>
