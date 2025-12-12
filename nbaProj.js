@@ -45,34 +45,6 @@ const rosterSchema = new mongoose.Schema({
 
 const Roster = mongoose.model("Roster", rosterSchema)
 
-// function makeTable(contents) {
-//   let html = `
-//     <table border="1">
-//       <tr>
-//         <th>Name</th>
-//         <th>Result</th>
-//       </tr>
-//   `;
-
-//   contents.forEach(p => {
-//     html += `
-//       <tr>
-//         <td>${p.name}</td>
-//         <td>
-//           ${p.status === "found"
-//             ? `Jersey #${p.jersey}`
-//             : `<span style="color:red">${p.message}</span>`
-//           }
-//         </td>
-//       </tr>
-//     `;
-//   });
-
-//   html += `</table>`;
-//   return html;
-// }
-
-
 
 app.get("/", (req, res) => {
   res.render("index");
@@ -82,10 +54,48 @@ app.get("/playerForm", (req,res) => {
   res.render("playerForm")
 })
 
+app.get("/removeAll", (req, res) => {
+  res.render("removeAll");
+})
+
+app.post("/processRemoveAll", async (req, res) => {
+  try {
+    const result = await Roster.deleteMany({});
+    res.render("processRemoveAll", {
+      number: result.deletedCount
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error removing rosters");
+  }
+});
+
+app.get("/removeOne", (req, res) => {
+  res.render("removeOne");
+});
+
+app.post("/previewRemoveOne", async (req, res) => {
+  const { email, lineup } = req.body;
+
+  const roster = await Roster.findOne({
+    email,
+    lineupName: lineup
+  });
+
+  if (!roster) {
+    return res.send("Roster not found");
+  }
+  res.render("previewRemoveOne", { roster });
+});
+
+app.post("/processRemoveOne", async (req, res) => {
+  await Roster.findByIdAndDelete(req.body.rosterId);
+  res.redirect("/");
+});
+
+
 async function getPlayerFromAPI(fullname){
-  const [first , last]=fullname.trim().split(" ")
-
-
+  const [first , last]=fullname.trim().split(" ");
   const url = `https://v2.nba.api-sports.io/players?name=${last}`;
 
   try {
@@ -142,22 +152,16 @@ for (const name of names){
       });
     }
 }
-
-
   const roster = new Roster({
     email:req.body.email,
     lineupName:req.body.lineup,
     players
-
   })
   await roster.save()
-  // const tableHTML = makeTable(players)
-
   res.render("playerResults", { players })
 })
 
 
-// Show page where user builds lineup
 app.get("/retreiveRoster", (req, res)=>{
     res.render("getRoster");
 })
@@ -186,15 +190,10 @@ res.render("playerResults", {
   console.error(err)
   res.status(500).send("Server error retrieving roster")
  }
- 
-
-
 
 })
 
 
-
-//Save Lineup
 
 app.get("/apitest", async (req, res) => {
   const fullName = "LeBron James";
@@ -208,7 +207,6 @@ app.get("/apitest", async (req, res) => {
           // In .env name api key "RAPID_API_KEY"
           // Disclaimer only 100 requests per day
           "x-apisports-key": process.env.RAPID_API_KEY
-          
         }
       });
 

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Player Roster</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <h2>Confirm Removal</h2>
+
+    <p><strong>Email:</strong> <%= roster.email %></p>
+    <p><strong>Lineup:</strong> <%= roster.lineupName %></p>
+
+    <table border="1">
+      <tr>
+        <th>Player</th>
+        <th>Jersey</th>
+      </tr>
+
+      <% roster.players.forEach(p => { %>
+      <tr>
+        <td><%= p.name %></td>
+        <td><%= p.jersey %></td>
+      </tr>
+      <% }) %>
+    </table>
+
+    <form
+      method="POST"
+      action="/processRemoveOne"
+      onsubmit="return confirm('Are you sure you want to permanently delete this roster?')"
+    >
+      <input type="hidden" name="rosterId" value="<%= roster._id %>" />
+      <input type="submit" value="Confirm Remove" />
+    </form>
+    <br><br>
+    <a href="/">Cancel</a>
+  </body>
+</html>
