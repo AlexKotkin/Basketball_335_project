@@ -31,7 +31,7 @@ async function connectDB() {
 
 const rosterSchema = new mongoose.Schema({
   email:{type:String, required:true},
-  lineupName:{type:Sting, required: true},
+  lineupName:{type:String, required: true},
   players: [{
     name: String,
     status: String,
@@ -146,7 +146,7 @@ for (const name of names){
 
   const roster = new Roster({
     email:req.body.email,
-    lineupName:req.body.lineupName,
+    lineupName:req.body.lineup,
     players
 
   })
